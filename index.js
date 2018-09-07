@@ -1,65 +1,41 @@
-import express from "express";
-import mongoose from "mongoose";
-import "babel-polyfill";
+import express from 'express';
+import mongoose from 'mongoose';
+import 'babel-polyfill';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import schema from './schema/schema';
+import { ApolloServer } from 'apollo-server-express';
+import config from './config/config';
 
-import bodyParser from "body-parser";
-import schema from "./schema/schema";
-import { ApolloServer } from "apollo-server-express";
-// import {
-//   ApolloServer
-//   //   graphqlExpress,
-//   //   graphiqlExpress
-// } from "apollo-server-express";
+// get config settings
+const PORT = config.app.port;
+const {
+  db: { host, port, name }
+} = config;
+const connectionString = `mongodb://${host}:${port}/${name}`;
 
-//Models
-import Visitors from "./models/VisitorModel";
-
-const PORT = 8800;
-const mongoURI = "mongodb://localhost:27017/sharekard";
-
+// create express app
 const app = express();
-//app.use(cors());
-// app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(bodyParser.json());
 
-// app.use(
-//   "/graphiql",
-//   graphiqlExpress({
-//     endpointURL: "/graphql"
-//   })
-// );
-// app.use("/graphql", bodyParser.json(), graphiqlExpress({}));
-import {
-  typeDefs,
-  resolvers
-} from "../server/schema/schemafiles/VisitorSchema";
-//const server = new ApolloServer({ typeDefs, resolvers });
+// set bodyparser and cors as middleware
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+//set the graphql server to express app
 const server = new ApolloServer({ schema });
 server.applyMiddleware({ app });
-app.listen(PORT, () => {
-  console.log("Listening on ", PORT);
-});
 
+//connect to database
 mongoose.connect(
-  mongoURI,
+  connectionString,
   { useNewUrlParser: true },
   () => {
-    console.log("Connected to Database <sharekard>");
-
-    //insertRec();
+    console.log('Connected to Database <sharekard>');
   }
 );
 
-function insertRec() {
-  var vis2 = new Visitors({
-    fullName: "Hamrosh",
-    mobileNumber: "9545845454"
-  });
-
-  vis2.save(function(err) {
-    console.log("Visitor has been saved!");
-    if (err) {
-      console.error(err);
-    }
-  });
-}
+// listen on specified port
+app.listen(PORT, () => {
+  console.log('Listening on ', PORT);
+});
