@@ -1,11 +1,11 @@
 const config = {
   app: {
-    port: 3000
+    port: 8800
   },
   db: {
-    host: 'localhost',
+    host: "localhost",
     port: 27017,
-    name: 'sharekard'
+    name: "sharekard"
   }
 };
 module.exports = config;
