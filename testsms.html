@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: "http://api.textlocal.in/send/",
+                type: "POST",
+                
+                data: {
+                    // 'username': 'hamroshroy@gmail.com',
+                    // 'hash': 'f5046fcdd218ed356501dc99ab61ed9e052bd3859f70d169e323375a882e08f2',
+                    //'numbers': '9970280564'
+                    'username': 'abhijeet_ardalkar@hotmail.com',
+                    'hash': 'ebf15fcc75480a8f9fd148582a549bc62a78ad49ff0195c83898014d2bbc77d5',
+                    'numbers': '8149004888',
+                    'sender': 'TXTLCL',
+                    'message': 'Hi from Abhijeet',
+                    'test': '0'
+                },
+                contentType: "application/json; charset=utf-8",
+                dataType: "jsonp",
+                success: function (data, status, jqXHR) {
+                    // success code
+
+                    console.log(data);
+                    $("#div1").html(JSON.stringify(data));
+
+                },
+                error: function (jqXHR, status) {
+                    // Error code
+                    alert("error" + jqXHR);
+                }
+            });
+        });
+
+
+    </script>
+</head>
+
+<body>
+
+    <div id="div1">
+        <h2>Change This Text</h2>
+    </div>
+
+
+</body>
+
+</html>

@@ -1,6 +1,11 @@
 import Visitors from "../../models/VisitorModel";
 import { gql } from "apollo-server";
 import randomize from "randomatic";
+import { fetch } from "apollo-server-env";
+import queryString from "querystring";
+import { app as appVar } from "../../config/config";
+
+import axios from "axios";
 
 export const typeDefs = gql`
   scalar Date
@@ -9,10 +14,11 @@ export const typeDefs = gql`
     mobileNumber: String!
     gender: String
     companyName: String
+
     OTP: String
     isOTPVerified: Boolean
     OTPVerifiedDate: Date
-
+    OTPCreatedDate: Date
     mobileIMEI: String
     mobileModel: String
   }
@@ -36,7 +42,7 @@ export const typeDefs = gql`
     # OTP: String
     # isOTPVerified: Boolean
     # OTPVerifiedDate: Date
-
+    OTPCreatedDate: Date
     mobileIMEI: String
     mobileModel: String
   }
@@ -55,37 +61,71 @@ export const resolvers = {
       // console.log(id, " ", enteredOTP);
 
       let data = await Visitors.findById(id);
-      if (data.OTP === enteredOTP) return "OTP verified successfully!!!!";
-      else return "OTP is incorrect !!!!";
-      //
-      //   return new Promise((resolve, reject) => {
-      //     Visitors.findById(id, (err, data) => {
-      //       if (data.OTP === enteredOTP) resolve("OTP verified successfully!!!!");
-      //       else resolve("OTP is incorrect !!!!");
-      //     });
-      //   });
+
+      // check for OTP expiry
+
+      let min = appVar.OTPExpiry;
+
+      // console.log("Milli sec: ", min);
+      // console.log("DATA: ", data.OTPCreatedDate);
+      // //console.log(Date() - new Date(data.OTPCreatedDate));
+
+      var date1 = new Date();
+      var date2 = new Date(data.OTPCreatedDate);
+      var timeDiff = Math.abs(date2 - date1);
+      var diff = Math.ceil(timeDiff / (1000 * 60)) - 1;
+      console.log(date1);
+      console.log(date2);
+      console.log(diff);
+      return new Promise((resolve, reject) => {
+        if (diff < min) {
+          console.log("ON");
+          if (data.OTP === enteredOTP) {
+            // OTP matched -- set isVerified=true and VerificatonDate =date1
+            Visitors.findByIdAndUpdate(
+              id,
+              {
+                isOTPVerified: true,
+                OTPVeriedDate: date1
+              }
+              //{dateUpdated:  Date.now()}
+            ).exec((err, res) => {
+              if (err) reject(err);
+              else resolve("OTP verified successfully!");
+            });
+            //return "OTP verified successfully!!!!";
+          } else {
+            console.log("OTP is incorrect!");
+            return resolve("OTP is incorrect!");
+          }
+        } else {
+          // console.log("OTP EXPIRED!");
+          return resolve("OTP EXPIRED!");
+        }
+      });
     }
   },
   Mutation: {
     addVisitor: (root, { input }, context) => {
       return new Promise((resolve, reject) => {
-        //console.log(input);
+        console.log(input);
+
         let OTP = randomOTPGenerator();
         console.log(".......");
         console.log(OTP);
         input.OTP = OTP;
+        let mobile = input.mobileNumber;
         let newVisitor = new Visitors(input);
         console.log(newVisitor);
         newVisitor.save((error, nVisitor) => {
-          resolve(nVisitor);
-        });
+          if (error) return reject(error);
 
-        // send an SMS with OTP for verification
-        console.log(
-          "Your OTP is " +
-            OTP +
-            ". Please enter it in your OTP verification box..."
-        );
+          // commented for testing   --uncomment it later
+          sendOTPtoVisitor(OTP, mobile);
+
+          resolve(nVisitor);
+          //console.log("SEND AN SMS WITH OTP...");
+        });
       });
     },
 
@@ -122,10 +162,42 @@ export const resolvers = {
 
 function randomOTPGenerator() {
   let OTP = "";
-  OTP = randomize("0", 5, { exclude: "0" });
+  OTP = randomize("0", 6, { exclude: "0" });
   return OTP;
 }
 
 function OTPVerification(id, enteredOTP) {
   //console.log(id + "," + enteredOTP);
+}
+
+function sendOTPtoVisitor(otp, mobile) {
+  let msg = "OTP for registration on ShareKard is " + otp,
+    username = "hamroshroy@gmail.com",
+    hash = "07ca7be8d9da49ceb018a38af7883d47a71f31c90d48dd67d3b90c36b10a7b69",
+    sender = "SHRKRD";
+
+  let getqs =
+    "?username=" +
+    username +
+    "&hash=" +
+    hash +
+    "&numbers=" +
+    mobile +
+    "&sender=" +
+    sender +
+    "&message=" +
+    msg +
+    "&test=0";
+
+  // console.log("qs : ", qs);
+  axios
+    .get("http://api.textlocal.in/send/" + getqs, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(function(response) {
+      console.log(response);
+    })
+    .catch(err => console.log(err));
 }

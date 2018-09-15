@@ -1,18 +1,6 @@
 import mongoose from "mongoose";
-
+import { AddressSchema } from "./AddressModel";
 const Schema = mongoose.Schema;
-
-const AddressSchema = new Schema(
-  {
-    address1: String,
-    address2: String,
-    landmark: String,
-    city: String,
-    state: String,
-    pincode: String
-  },
-  { _id: false }
-);
 
 const VisitorSchema = new Schema({
   fullName: { type: String, required: true },
@@ -20,6 +8,7 @@ const VisitorSchema = new Schema({
   gender: String,
   companyName: String,
   OTP: String,
+  OTPCreatedDate: { type: Date, default: Date.now },
   isOTPVerified: { type: Boolean, default: false },
   OTPVerifiedDate: Date,
   createdDate: { type: Date, default: Date.now },

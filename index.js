@@ -1,12 +1,11 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import 'babel-polyfill';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import schema from './schema/schema';
-import { ApolloServer } from 'apollo-server-express';
-import config from './config/config';
-
+import express from "express";
+import mongoose from "mongoose";
+import "babel-polyfill";
+import cors from "cors";
+import bodyParser from "body-parser";
+import schema from "./schema/schema";
+import { ApolloServer } from "apollo-server-express";
+import config from "./config/config";
 // get config settings
 const PORT = config.app.port;
 const {
@@ -31,11 +30,11 @@ mongoose.connect(
   connectionString,
   { useNewUrlParser: true },
   () => {
-    console.log('Connected to Database <sharekard>');
+    console.log("Connected to Database <sharekard>");
   }
 );
 
 // listen on specified port
 app.listen(PORT, () => {
-  console.log('Listening on ', PORT);
+  console.log("Listening on ", PORT);
 });
