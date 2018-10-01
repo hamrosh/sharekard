@@ -24,7 +24,7 @@ export const typeDefs = gql`
   }
   type Query {
     allVisitors: [Visitor]
-    VisitorById(id: String): Visitor
+    visitorById(id: String): Visitor
     OTPVerifier(id: ID, enteredOTP: String): String
   }
 
@@ -52,7 +52,7 @@ export const resolvers = {
     allVisitors: async () => {
       return await Visitors.find({});
     },
-    VisitorById: async (root, { id }, context) => {
+    visitorById: async (root, { id }, context) => {
       //      console.log(id);
       return await Visitors.findById(id);
     },

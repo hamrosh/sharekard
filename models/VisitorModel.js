@@ -12,6 +12,8 @@ const VisitorSchema = new Schema({
   isOTPVerified: { type: Boolean, default: false },
   OTPVerifiedDate: Date,
   createdDate: { type: Date, default: Date.now },
+  createdBy: { identifier: String, creatorType: String }, // user/admin/vendor
+
   mobileIMEI: String,
   mobileModel: String,
   vCardFront: String,

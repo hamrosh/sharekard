@@ -1,6 +1,6 @@
 const config = {
   app: {
-    port: 8800,
+    port: 8000,
     OTPExpiry: 2 //minute
   },
   db: {

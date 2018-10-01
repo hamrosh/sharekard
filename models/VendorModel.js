@@ -4,10 +4,30 @@ import { ContactSchema } from "./ContactModel";
 
 const Schema = mongoose.Schema;
 
+const userSchema = new Schema(
+  {
+    // admin , sales_person
+    role: String,
+    userName: { type: String, required: true },
+    password: String,
+    isActivated: Boolean
+  },
+  { _id: false }
+);
+userSchema.index({ userName: 1 }, { unique: true });
+
+userSchema.pre("save", next => {
+  console.log("");
+  let user = Vendors.users.id("5ba62bc5be0c0b1900b0e567");
+  console.log("IN PRE SAVE");
+  console.log(user);
+  next();
+});
+
 const VendorSchema = new Schema({
   vendorName: { type: String, required: true },
   //ID for company log in FOR ALL
-  vendorID: String,
+  vendorID: { type: String, required: true, unique: true },
 
   profilePic: String,
   ownerName: String,
@@ -20,16 +40,8 @@ const VendorSchema = new Schema({
   vendorLogo: String,
   address: AddressSchema,
   contacts: [ContactSchema],
-  users: [
-    {
-      // admin , sales_person
-      role: String,
-      userName: { type: String, unique: true },
-      password: String,
-      isActivated: Boolean
-    }
-  ]
+  users: [userSchema]
 });
 
-const Venders = mongoose.model("vendor", VendorSchema);
+const Vendors = mongoose.model("vendor", VendorSchema);
 export default Vendors;
