@@ -26,7 +26,7 @@ import {
 const typeDefs = [vendorDefs, visitorDefs, organiserDefs, eventDefs];
 const resolvers = merge(
   visitorResolvers,
-  vendorResolvers,
+  vendorResolvers,            
   organiserResolvers,
   eventResolvers
 );

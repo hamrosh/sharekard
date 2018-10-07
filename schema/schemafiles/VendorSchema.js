@@ -10,9 +10,9 @@ export const typeDefs = gql`
     vendorID: String!
 
     profilePic: String
-    ownerName: String
+    ownerName: String!
     #   required
-    ownerNumber: String
+    ownerNumber: String!
 
     vCardFront: String
     vCardBack: String
@@ -147,6 +147,8 @@ export const resolvers = {
 
         userExist.then(present => {
           console.log("Present", present);
+          console.log("Vendor ID", vendorID);
+
           if (!present) {
             Vendors.findOneAndUpdate(
               { _id: vendorID },
@@ -157,9 +159,9 @@ export const resolvers = {
               },
               { new: true },
               (err, doc, res) => {
-                if (err) reject(err);
+                if (err) resolve(err);
                 else {
-                  //console.log(res);
+                  console.log(res);
                   console.log(doc);
                   resolve("Updated successfully!");
                 }

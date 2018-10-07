@@ -107,7 +107,7 @@ export const resolvers = {
   },
   Mutation: {
     addVisitor: (root, { input }, context) => {
-      return new Promise((resolve, reject) => {
+       return new Promise((resolve, reject) => {
         console.log(input);
 
         let OTP = randomOTPGenerator();
