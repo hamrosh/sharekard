@@ -5,6 +5,7 @@ import { gql } from "apollo-server";
 export const typeDefs = gql`
   #   scalar Date
   type Vendor {
+    id: String
     vendorName: String!
     #   ID for company log in FOR ALL
     vendorID: String!
@@ -45,6 +46,7 @@ export const typeDefs = gql`
   extend type Query {
     allVendors: [Vendor]
     vendorById(id: String): Vendor
+    vendorByName(vendorName: String): [Vendor]
     VendorActivation(id: ID): String
   }
   extend type Mutation {
@@ -100,6 +102,12 @@ export const resolvers = {
     },
     vendorById: (root, args, context) => {
       return Vendors.findById(args.id);
+    },
+    vendorByName: (root, args, context) => {
+      console.log(args.vendorName.toString().toUpperCase());
+      return Vendors.find({
+        vendorName: new RegExp("\\b" + args.vendorName, "i")
+      });
     }
   },
   Mutation: {
