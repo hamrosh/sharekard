@@ -40,10 +40,10 @@ app.use("/public", express.static("public"));
 
 // Starting the server on Port , usee the ENV.PORT varialble Later
 
-app.use(express.static(`${__dirname}/../build`));
+app.use(express.static(`${__dirname}/build`));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build/index.html"));
+  res.sendFile(path.join(__dirname, "build/index.html"));
 });
 
 //uploading profile pics etc ...
